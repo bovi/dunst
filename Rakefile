@@ -2,7 +2,7 @@ require 'rubygems/package_task'
 require 'rake/testtask'
 
 spec = Gem::Specification.new do |s|
-  s.name         = 'smog'
+  s.name         = 'dunst'
   s.version      = '0.0.1'
   s.date         = '2017-01-27'
   s.summary      = "Simple cloud management tool"
@@ -10,9 +10,9 @@ spec = Gem::Specification.new do |s|
   s.authors      = ["Daniel Bovensiepen"]
   s.email        = 'daniel@bovensiepen.net'
   s.files        = Dir.glob("{bin}/**/*") + %w(LICENSE README.md)
-  s.executables  = ['smog']
+  s.executables  = ['dunst']
   s.add_runtime_dependency 'net-ssh', '~> 4.0', '>= 4.0.1'
-  s.homepage     = 'https://github.com/bovi/smog'
+  s.homepage     = 'https://github.com/bovi/dunst'
   s.license      = 'MIT'
 end
 
