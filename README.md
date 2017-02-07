@@ -22,10 +22,10 @@ Returns:
 
 ```
 Count	3
-ID			VMX									STATE	MAC			IP
-35986813758351367565	/home/dabo/vms/vmx/35986813758351367565/35986813758351367565.vmx	halt	00:50:56:2e:c8:ad	
-46478391399632621556	/home/dabo/vms/vmx/46478391399632621556/46478391399632621556.vmx	run	00:50:50:2e:c8:ad	172.23.0.170
-94165679480162074298	/home/dabo/vms/vmx/94165679480162074298/94165679480162074298.vmx	halt	00:50:51:2e:c8:ad
+ID                      VMX                                                                     STATE   MAC                     IP
+35986813758351367565    /home/dabo/vms/vmx/35986813758351367565/35986813758351367565.vmx        halt    00:50:56:2e:c8:ad
+46478391399632621556    /home/dabo/vms/vmx/46478391399632621556/46478391399632621556.vmx        run     00:50:50:2e:c8:ac       172.23.0.170
+94165679480162074298    /home/dabo/vms/vmx/94165679480162074298/94165679480162074298.vmx        halt    00:50:51:2e:c8:ad
 ```
 
 ### Create new machine
@@ -34,7 +34,7 @@ To create a new machine:
 
 ```
 dunst 192.168.0.1 user password new
-```a
+```
 
 Returns:
 
