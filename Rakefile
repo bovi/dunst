@@ -3,7 +3,7 @@ require 'rake/testtask'
 
 spec = Gem::Specification.new do |s|
   s.name         = 'dunst'
-  s.version      = '0.0.3'
+  s.version      = '0.0.4'
   s.date         = '2017-02-07'
   s.summary      = "Simple cloud management tool"
   s.description  = "Simple cloud management tool using SSH and VMWare Workstation. Supporting clone, start and stop of VMs."

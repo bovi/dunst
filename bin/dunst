@@ -2,6 +2,8 @@
 
 require 'net/ssh'
 
+VMRUN = '/usr/bin/vmrun'
+VM_HOME = '/home/dabo/vms'
 DHCP_HOST = '172.23.0.1'
 HOST = ARGV[0]
 USER = ARGV[1]
@@ -44,25 +46,31 @@ Net::SSH.start(HOST, USER, :password => KEY, :keys => [ KEY ]) do |ssh|
   when 'new'
     t = PARA1.nil? ? 'ubuntu1604' : PARA1
     n = rand(100**10)
-    ret = exe(ssh, "/usr/bin/vmrun -T ws clone /home/dabo/vms/_templates/#{t}/#{t}.vmx /home/dabo/vms/vmx/#{n}/#{n}.vmx linked")
+    ret = exe(ssh, "#{VMRUN} -T ws clone #{VM_HOME}/_templates/#{t}/#{t}.vmx #{VM_HOME}/vmx/#{n}/#{n}.vmx linked -cloneName=#{n}-#{t}")
     if ret.empty?
-      puts "OK\t#{n}"
+      mac = "00:50:56:#{rand(0..9)}#{rand(0..9)}:#{rand(0..9)}#{rand(0..9)}:#{rand(0..9)}#{rand(0..9)}"
+      ret = exe(ssh, "sed -i 's/ethernet0.address = \".*\"/ethernet0.address = \"#{mac}\"/g' #{VM_HOME}/vmx/#{n}/#{n}.vmx")
+      if ret.empty?
+        puts "OK\t#{n}"
+      else
+        puts "KO\t#{ret}"
+      end
     else
       puts "KO\t#{ret}"
     end
   when 'list'
-    ret = exe(ssh, "ls /home/dabo/vms/vmx")
+    ret = exe(ssh, "ls #{VM_HOME}/vmx")
     vms = ret.split
-    ret2 = exe(ssh, "/usr/bin/vmrun -T ws list")
+    ret2 = exe(ssh, "#{VMRUN} -T ws list")
     vms_state = ret2.split("\n")
     puts "Count\t#{vms.count}"
     puts "ID\t\t\tVMX\t\t\t\t\t\t\t\t\tSTATE\tMAC\t\t\tIP"
     vms.each do |v|
-      p = "/home/dabo/vms/vmx/#{v}/#{v}.vmx"
+      p = "#{VM_HOME}/vmx/#{v}/#{v}.vmx"
       s = vms_state.include?(p) ? 'run' : 'halt'
       mac = exe(ssh, "cat #{p} | grep \"ddress =\" | cut -d \"\\\"\" -f 2").strip.downcase
       if s == 'run'
-        ip = exe(ssh, "/usr/bin/vmrun -T ws getGuestIPAddress #{p}")
+        ip = exe(ssh, "#{VMRUN} -T ws getGuestIPAddress #{p}")
         ip = ip.match(/^Error/) ? get_ip(mac) : ip
         ip = ip.match(/^Error/) ? '' : ip
       else
@@ -72,7 +80,7 @@ Net::SSH.start(HOST, USER, :password => KEY, :keys => [ KEY ]) do |ssh|
     end
   when 'rm'
     n = PARA1
-    ret = exe(ssh, "/usr/bin/vmrun -T ws deleteVM /home/dabo/vms/vmx/#{n}/#{n}.vmx")
+    ret = exe(ssh, "#{VMRUN} -T ws deleteVM #{VM_HOME}/vmx/#{n}/#{n}.vmx")
     if ret.empty?
       puts "OK\t#{n}"
     else
@@ -80,7 +88,7 @@ Net::SSH.start(HOST, USER, :password => KEY, :keys => [ KEY ]) do |ssh|
     end
   when 'start'
     n = PARA1
-    ret = exe(ssh, "/usr/bin/vmrun -T ws start /home/dabo/vms/vmx/#{n}/#{n}.vmx nogui")
+    ret = exe(ssh, "#{VMRUN} -T ws start #{VM_HOME}/vmx/#{n}/#{n}.vmx nogui")
     if ret.empty?
       puts "OK\t#{n}"
     else
@@ -88,7 +96,7 @@ Net::SSH.start(HOST, USER, :password => KEY, :keys => [ KEY ]) do |ssh|
     end
   when 'halt'
     n = PARA1
-    ret = exe(ssh, "/usr/bin/vmrun -T ws stop /home/dabo/vms/vmx/#{n}/#{n}.vmx soft")
+    ret = exe(ssh, "#{VMRUN} -T ws stop #{VM_HOME}/vmx/#{n}/#{n}.vmx soft")
     if ret.empty?
       puts "OK\t#{n}"
     else
@@ -96,7 +104,7 @@ Net::SSH.start(HOST, USER, :password => KEY, :keys => [ KEY ]) do |ssh|
     end
   when 'stop'
     n = PARA1
-    ret = exe(ssh, "/usr/bin/vmrun -T ws stop /home/dabo/vms/vmx/#{n}/#{n}.vmx hard")
+    ret = exe(ssh, "#{VMRUN} -T ws stop #{VM_HOME}/vmx/#{n}/#{n}.vmx hard")
     if ret.empty?
       puts "OK\t#{n}"
     else
@@ -104,7 +112,7 @@ Net::SSH.start(HOST, USER, :password => KEY, :keys => [ KEY ]) do |ssh|
     end
   when 'reboot'
     n = PARA1
-    ret = exe(ssh, "/usr/bin/vmrun -T ws reset /home/dabo/vms/vmx/#{n}/#{n}.vmx soft")
+    ret = exe(ssh, "#{VMRUN} -T ws reset #{VM_HOME}/vmx/#{n}/#{n}.vmx soft")
     if ret.empty?
       puts "OK\t#{n}"
     else
@@ -112,7 +120,7 @@ Net::SSH.start(HOST, USER, :password => KEY, :keys => [ KEY ]) do |ssh|
     end
   when 'reset'
     n = PARA1
-    ret = exe(ssh, "/usr/bin/vmrun -T ws reset /home/dabo/vms/vmx/#{n}/#{n}.vmx hard")
+    ret = exe(ssh, "#{VMRUN} -T ws reset #{VM_HOME}/vmx/#{n}/#{n}.vmx hard")
     if ret.empty?
       puts "OK\t#{n}"
     else
