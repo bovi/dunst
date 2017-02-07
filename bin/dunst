@@ -28,7 +28,12 @@ end
 
 def get_ip(mac)
   Net::SSH.start(DHCP_HOST, USER, :password => KEY) do |ssh|
-    exe(ssh, "cat /var/log/syslog | grep #{mac} | grep DHCPACK | tail -n1 | cut -d \" \" -f 8")
+    l = exe(ssh, "cat /var/log/syslog | grep #{mac} | grep DHCPACK | tail -n1")
+    if l.match(/on\s([0-9\.]*)\s/)
+      $1
+    else
+      ''
+    end
   end
 end
 
